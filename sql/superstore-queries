@@ -1,0 +1,45 @@
+-- [1] Finding the most profitable and least profitable products by category.
+-- ROUND() Limits the amount of decimals to 2 for readability
+
+SELECT ROUND(SUM(Profit), 2) AS "Total Profit", Category FROM superstore
+GROUP BY Category
+ORDER BY "Total Profit"
+
+-- [2] Which regions or states have the highest and lowest total sales?
+
+SELECT Region, ROUND(SUM(Sales)) AS "Total Sales" FROM superstore
+GROUP BY Region
+ORDER BY "Total Sales" DESC
+
+-- Aggregates total sales by region and ranks them from highest to lowest.
+
+-- [3] Which customers generate the majority of the company’s profit?
+
+SELECT Segment, ROUND(SUM(Profit), 2) AS "Total Profit", 
+ROUND((ROUND(SUM(Profit), 2) * 100) / (SELECT ROUND(SUM(Profit), 2) from superstore), 2) AS "Percentage of Profit" from superstore
+GROUP BY Segment 
+ORDER BY "Total Profit" DESC;
+
+-- This query calculates each segment's total profit and its percentage contribution
+-- to the company’s overall profit. Helps identify which customer group drives the
+-- majority of business profitability.
+
+-- [4] What are the top 10 best-selling products, and what patterns do they share (price, category, margin)?
+
+SELECT "Product Name", 
+ROUND(SUM(Sales), 2) AS "Total Sales", -- Total sales by each product
+Category,  
+ROUND(SUM(Profit) / SUM(Sales) * 100, 2) AS "% Margin" -- Calculation of the Profit margin using a simple formula
+FROM superstore
+GROUP BY "Product Name", Category -- Grouping products by their name and category 
+ORDER BY "Total Sales" DESC -- Shows the products by the highest amount of sales
+LIMIT 10; -- Shows only the top 10 products with most sales
+
+-- [5] Is there a relationship between discounts and profit earned?
+
+SELECT Discount, 
+ROUND(AVG(Profit), 2) AS "Average Profit", -- Shows the average profit at each discount %
+COUNT(*) AS "Number of Orders" -- Shows how many orders had that discount
+FROM superstore
+GROUP BY Discount -- Shows each discount individually
+ORDER BY Discount DESC; -- Shows the data from highest to lowest discount
